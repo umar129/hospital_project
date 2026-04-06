@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Details - Hospital Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .patient-id {
+            text-align: center;
+            color: #999;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .detail-card {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #333;
+            min-width: 150px;
+        }
+        
+        .detail-value {
+            color: #666;
+            word-break: break-word;
+        }
+        
+        .doctor-info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .doctor-info p {
+            margin-bottom: 8px;
+        }
+        
+        .no-doctor {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            flex: 1;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-edit {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background-color: #218838;
+        }
+        
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+        
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👤 Patient Details</h1>
+        <div class="patient-id">Patient ID: #{{ patient.id }}</div>
+        
+        <div class="detail-card">
+            <div class="detail-row">
+                <span class="detail-label">Name:</span>
+                <span class="detail-value"><strong>{{ patient.name }}</strong></span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Age:</span>
+                <span class="detail-value">{{ patient.age }} years</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Mobile:</span>
+                <span class="detail-value">{{ patient.mobile }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Email:</span>
+                <span class="detail-value">{{ patient.email }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Address:</span>
+                <span class="detail-value">{{ patient.address|default:"Not provided" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Assigned Doctor:</span>
+                <span class="detail-value">
+                    {% if patient.doctor %}
+                        <strong>{{ patient.doctor.name }}</strong>
+                    {% else %}
+                        <span class="no-doctor">No doctor assigned</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        
+        {% if patient.doctor %}
+            <div class="doctor-info">
+                <h3>👨‍⚕️ Doctor Information</h3>
+                <p><strong>Name:</strong> {{ patient.doctor.name }}</p>
+                <p><strong>Department:</strong> {{ patient.doctor.department.dep_name }}</p>
+                <p><strong>Joining Date:</strong> {{ patient.doctor.joining_date|date:"d M Y" }}</p>
+            </div>
+        {% endif %}
+        
+        <div class="action-buttons">
+            <a href="{% url 'patients:patient_update' patient.id %}" class="btn btn-edit">Edit Patient</a>
+            <a href="{% url 'patients:patient_list' %}" class="btn btn-back">Back to List</a>
+            <a href="{% url 'patients:patient_delete' patient.id %}" class="btn btn-delete">Delete</a>
+        </div>
+    </div>
+</body>
+</html>

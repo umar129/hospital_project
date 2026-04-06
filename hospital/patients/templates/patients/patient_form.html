@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if patient %}Update{% else %}Add{% endif %} Patient - Hospital Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.2);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-submit {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background-color: #5568d3;
+        }
+        
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+        
+        .error-messages {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .error-messages ul {
+            margin-left: 20px;
+        }
+        
+        .error-messages li {
+            margin-bottom: 5px;
+        }
+        
+        .field-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{% if patient %}📝 Update Patient{% else %}➕ Add New Patient{% endif %}</h1>
+        
+        {% if errors %}
+            <div class="error-messages">
+                <strong>Please fix the following errors:</strong>
+                {% for field, error_list in errors.items %}
+                    <p><strong>{{ field }}:</strong> {{ error_list.0 }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="POST">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" id="name" name="name" required value="{{ patient.name|default:'' }}{{ form_data.name|default:'' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Age (in years) *</label>
+                <input type="number" id="age" name="age" required min="1" max="150" value="{{ patient.age|default:''}}{{ form_data.age|default:'' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="mobile">Mobile Number (10 digits) *</label>
+                <input type="text" id="mobile" name="mobile" required pattern="\d{10}" value="{{ patient.mobile|default:''}}{{ form_data.mobile|default:'' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required value="{{ patient.email|default:''}}{{ form_data.email|default:'' }}">
+            </div>
+            
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" name="address">{{ patient.address|default:''}}{{ form_data.address|default:'' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="doctor_id">Assign Doctor</label>
+                <select id="doctor_id" name="doctor_id">
+                    <option value="">-- Select a Doctor --</option>
+                    {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}" {% if patient.doctor.id == doctor.id %}selected{% endif %}>
+                            {{ doctor.name }} ({{ doctor.department.dep_name }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-buttons">
+                <button type="submit" class="btn btn-submit">{% if patient %}Update Patient{% else %}Add Patient{% endif %}</button>
+                <a href="{% url 'patients:patient_list' %}" class="btn btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
